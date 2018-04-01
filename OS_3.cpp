@@ -25,7 +25,7 @@ int _tmain()
 {
 	cin >> n;
 	N = n;
-	T = new int[n+1];
+	T = new int[n];
 	srand(GetTickCount());
 	int check = 0;
 	for (int i = 0; i < n; i++)
@@ -35,18 +35,21 @@ int _tmain()
 		cout << T[i]<<' ';
 	}
 	cout << endl;
-	int MAX_THREADS = n/2+1;
+	int MAX_THREADS = (n >> 1);
 	HANDLE  *hThreadArray = new HANDLE[MAX_THREADS];
 
 	// Create MAX_THREADS worker threads.
-	while (n > 2) {
-		if (n & 1) { T[n] = 0; n = n / 2 + 1; }
-		else n /= 2;
-		for (int i = 0; i < n; i++)
+
+	while (n > 1) {
+		int start = n & 1?1:0;
+		n = n >> 1;
+		
+		for (int i=0; i < n; i++)
 		{
-			hThreadArray[i] = CreateThread(0, 0, MyThreadFunction, (LPVOID)i, 0, 0);
+			hThreadArray[i] = CreateThread(0, 0, MyThreadFunction, (LPVOID)(i+start), 0, 0);
 		}
 		WaitForMultipleObjects(n, hThreadArray, TRUE, INFINITE);
+		if (start) n++;
 		for (int i = 0; i < n; i++)
 		{
 			CloseHandle(hThreadArray[i]);
@@ -58,7 +61,7 @@ int _tmain()
 		}
 		cout << endl;
 	}
-	T[0] += T[1];
+	//T[0] += T[1];
 
 	cout<<"right: "<<check <<" result: "<<T[0]<< endl;
 	delete[] hThreadArray;

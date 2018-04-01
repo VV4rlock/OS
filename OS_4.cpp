@@ -89,24 +89,28 @@ DWORD WINAPI MyThreadFunction(LPVOID lpParam)
 	int index = (int)lpParam; //0...q*q
 	int block_row = index / q;
 	int block_column = index%q;
-
+	char buf[255];
+	char* ptr = buf;
 	int * vector = new int[m_q];
-
+	
+	int beg_row = block_row * m_q;
+	int beg_cul = block_column * n_q;
+	ptr+=sprintf_s(ptr,255,"Processing block (%d,%d)\n\tvector: ", block_row, block_column);
 	for (int i = 0; i < m_q; i++)
 	{
+		
 		vector[i] = 0;
 		for (int r = 0; r < n_q; r++)
-			vector[i] += A[i + block_row * m_q][r + block_column * n_q] * B[r + block_column * n_q];
+			vector[i] += A[i + beg_row][r + beg_cul] * B[r + beg_cul];
+		ptr += sprintf_s(ptr,255-(ptr-buf), "%d ", vector[i]);
 	}
 	WaitForSingleObject(mutexArr[block_row], INFINITE);
-	printf("Pricessing block (%d,%d)\n\tvector: ", block_row, block_column);
 	for (int i = 0; i < m_q; i++) {
-		printf("%d ", vector[i]);
 		C[i + m_q * block_row] += vector[i]; //critical section
 	}
-	printf("\n");
+	
 	ReleaseMutex(mutexArr[block_row]);
-
+	printf("%s\n",buf);
 	delete[] vector;
 
 	return 0;
