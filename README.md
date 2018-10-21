@@ -1,5 +1,5 @@
-#Operating system(using WinAPI)
-os_pi - computing pi
+#Operating system(using WinAPI)\n
+os_pi - computing pi\n
 os_proc - workink with process
 os1 - multiplication of polynomials
 os2 - binary merge
